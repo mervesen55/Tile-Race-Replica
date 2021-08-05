@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class EchoEffect : MonoBehaviour
 {
-    private float timeBetweenSpawns;
+  
     [SerializeField] private float startTimeBetweenSpawns;
-    [SerializeField] private GameObject echo;
-   
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private GameObject echo;
+
+    private float timeBetweenSpawns;
+
+
 
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.gameStarted)
+        if (GameManager.Instance.gameStarted)
         {
             if (timeBetweenSpawns <= 0)
             {

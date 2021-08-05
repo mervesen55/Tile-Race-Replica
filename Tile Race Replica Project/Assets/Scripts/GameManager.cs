@@ -5,9 +5,19 @@ using Cinemachine;
 
 public class GameManager : MonoBehaviour
 {
+    #region Fields
+
+    public static GameManager Instance;
+
+    public int PlayerRant;
+
+    [HideInInspector] public bool LevelCompleted = false;
+    [HideInInspector] public bool gameStarted = false;
+
     [SerializeField] private GameObject[] characters;
     [SerializeField] private GameObject[] unSortedCharacters;
     [SerializeField] private GameObject[] crowns;
+
     [SerializeField] private GameObject panel;
     [SerializeField] private GameObject TappedTooSoonText;
     [SerializeField] private GameObject greenLight;
@@ -15,27 +25,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject Rank;
     [SerializeField] private GameObject Result;
     [SerializeField] private GameObject gameOverGUI;
+
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+
     private int NumberOfCharacters;
-    [HideInInspector] public bool levelCompleted = false;
-    //public bool gameOver = false;
 
+    #endregion
 
-
-    [HideInInspector] public bool gameStarted = false;
-    public static GameManager instance;
-    public int PlayerRant;
-
-    // Start is called before the first frame update
+    #region Start and Update Methods
     void Start()
     {
         
         NumberOfCharacters = characters.Length;
-        instance = this;
+        Instance = this;
   
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -50,7 +55,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(disableTappedtooSoonText());
         }
 
-        if (gameStarted && !levelCompleted)
+        if (gameStarted && !LevelCompleted)
         {
             Sort(characters); // i sort characters from biggest transform.z to smalest transform.z
 
@@ -77,6 +82,50 @@ public class GameManager : MonoBehaviour
         }
        
     }
+    #endregion
+
+    #region Public Methods
+    public void CompleteLevel()
+    {
+
+        characters[0].gameObject.transform.position = new Vector3(0.51f, -28, 93.86f);
+        characters[0].gameObject.transform.rotation = Quaternion.Euler(0, 180, 0);
+        characters[0].GetComponent<Animator>().SetTrigger("DidWin");
+
+
+        characters[1].SetActive(false);
+        characters[1].gameObject.transform.position = new Vector3(-1.92f, -28.42f, 93.92f);
+        characters[1].transform.rotation = Quaternion.Euler(0, 180, 0);
+        characters[1].GetComponent<Animator>().SetTrigger("DidLose");
+        characters[1].SetActive(true);
+
+        characters[2].SetActive(false);
+        characters[2].gameObject.transform.position = new Vector3(2.34f, -28.79f, 93.92f);
+        characters[2].gameObject.transform.rotation = Quaternion.Euler(0, 180, 0);
+        characters[2].GetComponent<Animator>().SetTrigger("DidLose");
+        characters[2].SetActive(true);
+
+
+
+        Rank.SetActive(false);
+        Result.SetActive(true);
+    }
+    public void GameOver()
+    {
+        gameOverGUI.SetActive(true);
+        cinemachineVirtualCamera.m_Follow = null;
+        cinemachineVirtualCamera.m_LookAt = null;
+        Rank.SetActive(false);
+    }
+    public void ReStart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    #endregion
+
+
+    #region Private Methods
 
     // This is bubble sort. Sorting from biggest to smallest 
     private void Sort(GameObject[] array)
@@ -106,44 +155,6 @@ public class GameManager : MonoBehaviour
         TappedTooSoonText.SetActive(false);
 
     }
-    //change its name please. it doesn't sound like a function name but a bool name
-    public void LevelCompleted()
-    {
-        //Cup.SetActive(true);
-        //cinemachineVirtualCamera.m_Follow = Cup.transform;
-        //cinemachineVirtualCamera.m_LookAt = Cup.transform;
-        characters[0].gameObject.transform.position = new Vector3(0.51f, -28, 93.86f);
-        characters[0].gameObject.transform.rotation =  Quaternion.Euler(0, 180, 0);
-        characters[0].GetComponent<Animator>().SetTrigger("DidWin");
+    #endregion
 
-
-        characters[1].SetActive(false);
-        characters[1].gameObject.transform.position = new Vector3(-1.92f, -28.42f, 93.92f);
-        characters[1].transform.rotation = Quaternion.Euler(0, 180, 0);
-        characters[1].GetComponent<Animator>().SetTrigger("DidLose");
-        characters[1].SetActive(true);
-
-        characters[2].SetActive(false);
-        characters[2].gameObject.transform.position = new Vector3(2.34f, -28.79f, 93.92f);
-        characters[2].gameObject.transform.rotation = Quaternion.Euler(0, 180, 0);
-        characters[2].GetComponent<Animator>().SetTrigger("DidLose");
-        characters[2].SetActive(true);
-
-
-
-        Rank.SetActive(false);
-        Result.SetActive(true);
-    }
-
-    public void GameOver()
-    {
-        gameOverGUI.SetActive(true);
-        cinemachineVirtualCamera.m_Follow = null;
-        cinemachineVirtualCamera.m_LookAt = null;
-        Rank.SetActive(false);
-    }
-   public void ReStart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
 }

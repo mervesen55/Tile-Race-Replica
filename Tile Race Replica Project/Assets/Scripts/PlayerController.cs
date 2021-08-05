@@ -3,24 +3,35 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Fields
     public static float speed = 6;
+
+
+    [SerializeField] private Transform groundCheck;
+
+    [SerializeField] private LayerMask groundMask;
+
+    [SerializeField] private CharacterController controller;
+
     private float gravity = -9.81f;
     private float groundDistance = 0.4f;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundMask;
-    [SerializeField] private CharacterController controller;
-    private Animator animator;
-    private EchoEffect echoEffect;
-    private Vector3 velocity;
     private float currentLerpTime = 0;
     private float lerpTime = 15;
     private float cameraZDistance;
     private float rotationValue = 0;
+
     private bool isGrounded;
     private bool isArrivedFinishPoint = false;
 
+    private Animator animator;
 
+    private EchoEffect echoEffect;
 
+    private Vector3 velocity;
+
+    #endregion
+
+    #region Start and Update Methods
     void Start()
     {
         cameraZDistance = Camera.main.WorldToScreenPoint(transform.position).z;
@@ -33,15 +44,15 @@ public class PlayerController : MonoBehaviour
     {
         if(transform.position.y < -30 )
         {
-            GameManager.instance.GameOver();
+            GameManager.Instance.GameOver();
         }
         
-        if (Input.GetMouseButton(0) && GameManager.instance.gameStarted && isArrivedFinishPoint)
+        if (Input.GetMouseButton(0) && GameManager.Instance.gameStarted && isArrivedFinishPoint)
         {
             animator.SetTrigger("IsRunning");
         }
 
-        if (GameManager.instance.gameStarted && !isArrivedFinishPoint)
+        if (GameManager.Instance.gameStarted && !isArrivedFinishPoint)
         {
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
             
@@ -69,10 +80,12 @@ public class PlayerController : MonoBehaviour
 
     }
 
- 
+    #endregion
+
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "tile" && GameManager.instance.gameStarted)
+        if (other.tag == "tile" && GameManager.Instance.gameStarted)
         {
             StartCoroutine(FallTiles(other.gameObject));
             //echo effect should work only while the character is flipping.
@@ -83,11 +96,11 @@ public class PlayerController : MonoBehaviour
         }
         if (other.tag == "final")
         {
-            //Destroy(gameObject);
+            
             isArrivedFinishPoint = true;
-            //animator.SetTrigger("IsWaiting");
-            GameManager.instance.levelCompleted = true;
-            GameManager.instance.LevelCompleted();
+            
+            GameManager.Instance.LevelCompleted = true;
+            GameManager.Instance.CompleteLevel();
         }
 
         if (other.tag == "jumperButton")
@@ -102,6 +115,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    #region Private Methods
     private IEnumerator FallTiles(GameObject other)
     {
       
@@ -122,7 +136,7 @@ public class PlayerController : MonoBehaviour
         echoEffect.enabled = false;
 
     }
- 
+    #endregion
 
-   
+
 }
